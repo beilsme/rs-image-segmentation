@@ -1,0 +1,8 @@
+affine
+joblib
+matplotlib
+numpy
+pandas
+rasterio
+seaborn
+scikit-learn
