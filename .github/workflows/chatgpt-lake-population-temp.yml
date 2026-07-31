@@ -1,0 +1,33 @@
+name: ChatGPT temporary lake population calculation
+
+on:
+  pull_request:
+    paths:
+      - 'chatgpt_lake_population/**'
+
+permissions:
+  contents: read
+
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install geospatial dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas requests shapely geopandas rasterio scipy scikit-learn pyproj
+      - name: Compute true shoreline population metrics
+        run: python chatgpt_lake_population/compute_population.py
+      - name: Upload result tables
+        uses: actions/upload-artifact@v4
+        with:
+          name: lake-population-results
+          path: chatgpt_lake_population/output/
+          retention-days: 3
+          if-no-files-found: error
